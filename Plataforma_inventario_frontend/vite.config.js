@@ -8,10 +8,10 @@ export default defineConfig({
     setupFiles: "./src/setupTests.js",
     coverage: {
       provider: "istanbul",
-      enabled: true, // usa istanbul para el coverage
-      reporter: ["text", "html"], // texto en consola + html en coverage/
+      enabled: true,
+      reporter: ["text", "html"],
       reportsDirectory: "coverage",
-      statements: 80, // umbral mínimo
+      statements: 80,
       branches: 80,
       functions: 80,
       lines: 80,

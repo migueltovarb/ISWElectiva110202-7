@@ -16,6 +16,8 @@ import ReporteInventario from "./componentes/ReporteInventario";
 import DevolucionForm from "./componentes/DevolucionForm";
 import AssignEditorRole from "./componentes/RolesEditor";
 import UserManagement from "./componentes/UserManagement";
+import EditProduct from "./componentes/EditProduct";
+import { ConsumoInterno } from "./componentes/ConsumoInterno";
 
 export default function App() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
       <Route path="/devolucion-form" element={<DevolucionForm />} />
       <Route path="/roles-editor" element={<AssignEditorRole />} />
       <Route path="/user-managment" element={<UserManagement />} />
+      <Route path="/edit-product/:codigo" element={<EditProduct />} />
+      <Route path="/consumo-interno" element={<ConsumoInterno />} />
     </Routes>
   );
 }

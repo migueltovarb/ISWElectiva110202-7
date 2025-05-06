@@ -1,10 +1,12 @@
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from .models import Producto, Stock, NotificacionStock, Usuario, MovimientoInventario, Devolucion
+from .models import Producto, Stock, NotificacionStock, Usuario, MovimientoInventario, Devolucion,InventarioObsoletos, Almacen, TransferenciaInventario
 from .serializers import (
-    ProductoSerializer, StockSerializer, NotificacionStockSerializer, UsuarioSerializer, MovimientoInventarioSerializer, DevolucionSerializer
+    ProductoSerializer, StockSerializer, NotificacionStockSerializer, UsuarioSerializer, MovimientoInventarioSerializer, DevolucionSerializer, ConsumoInternoSerializer, TransferenciaSerializer, InventarioObsoletosSerializer, AlmacenSerializer
 )
 
 class ProductoCreateView(APIView):
@@ -132,3 +134,93 @@ class DevolucionView(APIView):
         data = DevolucionSerializer(qs, many=True).data
         return Response(data)
  
+class ProductoDetailView(generics.RetrieveUpdateAPIView):
+    lookup_field = 'codigo'
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def perform_update(self, serializer):
+        serializer.save(editado_por = self.request.user)
+        
+
+class ConsumoInternoView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        qs= MovimientoInventario.objects.filter(tipo_movimiento='Salida').order_by('-fecha')
+        serailizer = ConsumoInternoSerializer(qs, many=True)
+        return Response(serailizer.data)
+    
+    def post(self,request):
+        serializer = ConsumoInternoSerializer(data = request.data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save(usuario=request.user)
+            return Response(
+                {"message":"Consumo interno registrado correctamente","data":serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class AlmacenAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = Almacen.objects.all()
+        serializer = AlmacenSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class TransferenciaAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = TransferenciaInventario.objects.all()
+        serializer = TransferenciaSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = TransferenciaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(usuario=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        instancia = get_object_or_404(TransferenciaInventario, pk=pk)
+        if instancia.confirmada:
+            return Response({'error': 'Ya confirmada, no puede editarse.'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = TransferenciaSerializer(instancia, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class InventarioObsoletosAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        queryset = InventarioObsoletos.objects.all()
+        serializer = InventarioObsoletosSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = InventarioObsoletosSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(marcado_por=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        registro = get_object_or_404(InventarioObsoletos, pk=pk)
+        serializer = InventarioObsoletosSerializer(registro, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post_revertir(self, request, pk):
+        registro = get_object_or_404(InventarioObsoletos, pk=pk)
+        if registro.revertido:
+            return Response({'error': 'Ya fue revertido.'}, status=status.HTTP_400_BAD_REQUEST)
+        registro.revertir()
+        serializer = InventarioObsoletosSerializer(registro)
+        return Response(serializer.data)

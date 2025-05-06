@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from AppInventario.models import Usuario, Producto, Stock, NotificacionStock, MovimientoInventario, Devolucion
+from AppInventario.models import Usuario, Producto, Stock, NotificacionStock, MovimientoInventario, Devolucion,TransferenciaInventario, InventarioObsoletos, Almacen
 
 User = get_user_model()
 
@@ -15,7 +15,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.PrimaryKeyRelatedField(many=True, queryset=Group.objects.all())
-    token = serializers.CharField(write_only=True, required=False)  # Opcional, para enviar el token con el usuario
+    token = serializers.CharField(write_only=True, required=False)  
 
     class Meta:
         model = get_user_model()
@@ -111,3 +111,36 @@ class DevolucionSerializer(serializers.ModelSerializer):
         model = Devolucion
         fields = ['id', 'producto', 'cantidad', 'motivo', 'reincorpora', 'fecha', 'usuario']
         read_only_fields = ['fecha', 'usuario']
+
+class ConsumoInternoSerializer(serializers.ModelSerializer):
+    usuario = serializers.ReadOnlyField(source='usuario.username')
+    tipo_movimiento = serializers.HiddenField(default='salida')
+    
+    class Meta:
+        model = MovimientoInventario
+        fields = ['id','producto','cantidad','tipo_movimiento','motivo','usuario','fecha']
+      
+    
+class AlmacenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Almacen
+        fields = ['id', 'nombre', 'ubicacion']  
+    
+class TransferenciaSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.ReadOnlyField(source='producto.nombre')
+    origen_nombre = serializers.ReadOnlyField(source='origen.nombre')
+    destino_nombre = serializers.ReadOnlyField(source='destino.nombre')
+    usuario = serializers.ReadOnlyField(source='usuario.username')
+
+    class Meta:
+        model = TransferenciaInventario
+        fields = ['id', 'producto', 'producto_nombre', 'cantidad', 'origen', 'origen_nombre', 'destino', 'destino_nombre', 'usuario', 'fecha', 'confirmada']
+
+class InventarioObsoletosSerializer(serializers.ModelSerializer):
+    producto_codigo = serializers.ReadOnlyField(source='producto.codigo')
+    producto_nombre = serializers.ReadOnlyField(source='producto.nombre')
+    marcado_por = serializers.ReadOnlyField(source='marcado_por.username')
+
+    class Meta:
+        model = InventarioObsoletos
+        fields = ['id', 'producto', 'producto_codigo', 'producto_nombre', 'estado', 'fecha_marcado', 'marcado_por', 'revertido', 'fecha_revertido']
