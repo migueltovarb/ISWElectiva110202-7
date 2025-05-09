@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
+import TablaStockUpdate from "./StockUpdateTable";
 
 const StockUpdateForm = () => {
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     producto: "",
     stockMinimo: "",
@@ -9,11 +13,20 @@ const StockUpdateForm = () => {
     umbralMinimo: "",
     fechaActualizacion: "",
   });
+
   const [mensajeStockMinimo, setMensajeStockMinimo] = useState("");
   const [mensajeCantidad, setMensajeCantidad] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
   const [stockActual, setStockActual] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [mostrarTabla, setMostrarTabla] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      setFormData((prev) => ({ ...prev, producto: id }));
+      handleObtener(id);
+    }
+  }, [id]);
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -31,15 +44,15 @@ const StockUpdateForm = () => {
     }
   };
 
-  const handleObtener = async () => {
-    if (!formData.producto.trim()) {
+  const handleObtener = async (codigo = formData.producto) => {
+    if (!codigo.trim()) {
       alert("Ingrese el código del producto");
       return;
     }
     setIsLoading(true);
     try {
       const { data } = await axios.get(
-        `http://127.0.0.1:8000/api/productos/${formData.producto}/actualizar_stock/`
+        `http://127.0.0.1:8000/api/productos/${codigo}/actualizar_stock/`
       );
       setStockActual(data.cantidad);
       setFormData((prev) => ({
@@ -49,7 +62,7 @@ const StockUpdateForm = () => {
         umbralMinimo: data.umbral_minimo,
         fechaActualizacion: data.fecha_actualizacion,
       }));
-      setMensajeExito("Los cambios se guardaron exitosamente.");
+      setMensajeExito("Datos obtenidos correctamente.");
     } catch (err) {
       alert(err.response?.data?.detail || err.message);
     } finally {
@@ -69,7 +82,11 @@ const StockUpdateForm = () => {
     }
     setIsLoading(true);
     try {
-      const payload = { nueva_cantidad: parseInt(formData.cantidad, 10) };
+      const payload = {
+        nueva_cantidad: parseInt(formData.cantidad, 10),
+        stock_minimo: parseInt(formData.stockMinimo, 10),
+        umbral_minimo: parseInt(formData.umbralMinimo, 10),
+      };
       const { data } = await axios.post(
         `http://127.0.0.1:8000/api/productos/${formData.producto}/actualizar_stock/`,
         payload
@@ -85,6 +102,7 @@ const StockUpdateForm = () => {
       });
       setMensajeStockMinimo("");
       setMensajeCantidad("");
+      setMostrarTabla(true);
     } catch (err) {
       alert(err.response?.data?.error || err.message);
     } finally {
@@ -104,6 +122,7 @@ const StockUpdateForm = () => {
     setMensajeExito("Se han deshecho los cambios automáticamente.");
     setMensajeStockMinimo("");
     setMensajeCantidad("");
+    setMostrarTabla(false);
   };
 
   const handleCancelar = () => {
@@ -111,11 +130,15 @@ const StockUpdateForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex justify-center items-center p-4">
+    <div className="min-h-screen bg-white flex flex-col items-center p-4">
       <div className="w-full max-w-3xl bg-[#CCF5CC] border border-black rounded-lg p-6 shadow-lg">
         <h1 className="text-center uppercase font-bold text-2xl mb-4 text-[#0056B3]">
           ACTUALIZACIÓN DE STOCK - HU002
         </h1>
+
+        <h2 className="text-center text-sm mb-4 text-black font-semibold">
+          Se registrará automáticamente la fecha y el usuario
+        </h2>
 
         <div className="bg-[#E5FFE5] border border-black rounded-lg p-4 mb-6">
           <h2 className="text-center uppercase font-bold text-xl mb-4 text-[#FFA500]">
@@ -140,13 +163,11 @@ const StockUpdateForm = () => {
                 name="stockMinimo"
                 type="number"
                 value={formData.stockMinimo}
-                readOnly
+                onChange={handleChange}
                 className="w-full px-2 h-10 bg-[#E5E5E5] border border-black rounded"
               />
               {mensajeStockMinimo && (
-                <p className="mt-1 text-sm text-red-600">
-                  {mensajeStockMinimo}
-                </p>
+                <p className="text-red-600">{mensajeStockMinimo}</p>
               )}
             </div>
 
@@ -161,7 +182,7 @@ const StockUpdateForm = () => {
                 className="w-full px-2 h-10 bg-[#E5E5E5] border border-black rounded"
               />
               {mensajeCantidad && (
-                <p className="mt-1 text-sm text-red-600">{mensajeCantidad}</p>
+                <p className="text-red-600">{mensajeCantidad}</p>
               )}
             </div>
 
@@ -171,7 +192,7 @@ const StockUpdateForm = () => {
                 name="umbralMinimo"
                 type="number"
                 value={formData.umbralMinimo}
-                readOnly
+                onChange={handleChange}
                 className="w-full px-2 h-10 bg-[#E5E5E5] border border-black rounded"
               />
             </div>
@@ -228,6 +249,12 @@ const StockUpdateForm = () => {
           </button>
         </div>
       </div>
+
+      {mostrarTabla && (
+        <div className="mt-8 w-full max-w-5xl">
+          <TablaStockUpdate codigo={formData.producto} />
+        </div>
+      )}
     </div>
   );
 };

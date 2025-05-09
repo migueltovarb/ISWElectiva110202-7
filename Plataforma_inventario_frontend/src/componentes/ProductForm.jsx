@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import ProductTable from "./ProductTable";
 
 const token = localStorage.getItem("accessToken");
 if (token) {
@@ -19,6 +21,9 @@ const ProductForm = () => {
   const [mensajeExito, setMensajeExito] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [productos, setProductos] = useState([]);
+  const [productoSeleccionadoId, setProductoSeleccionadoId] = useState(null);
+
+  const navigate = useNavigate();
 
   const validarCodigo = (codigo) => {
     if (codigo === "EXISTENTE")
@@ -78,6 +83,14 @@ const ProductForm = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleActualizarStock = (productId) => {
+    navigate(`/stock-update/${productId}`);
+  };
+
+  const handleSeleccionarProducto = (id) => {
+    setProductoSeleccionadoId(id);
   };
 
   return (
@@ -206,55 +219,27 @@ const ProductForm = () => {
           </p>
         )}
         {productos.length > 0 && (
-          <div className="border border-black bg-white rounded p-4">
-            <h3 className="font-bold text-xl mb-4 text-black">
-              Tabla de Productos
-            </h3>
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="bg-gray-200">
-                  {[
-                    "NOMBRE PRODUCTO",
-                    "CÓDIGO",
-                    "CATEGORÍA",
-                    "CANTIDAD",
-                    "PRECIO",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="border border-black p-2 font-bold text-sm"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {productos.map((p, i) => (
-                  <tr
-                    key={i}
-                    className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                  >
-                    <td className="border border-black p-2 text-sm">
-                      {p.nombre}
-                    </td>
-                    <td className="border border-black p-2 text-sm">
-                      {p.codigo}
-                    </td>
-                    <td className="border border-black p-2 text-sm">
-                      {p.categoria}
-                    </td>
-                    <td className="border border-black p-2 text-sm text-center">
-                      {p.cantidad}
-                    </td>
-                    <td className="border border-black p-2 text-sm text-right">
-                      ${p.precio}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="border border-black bg-white rounded p-4">
+              <h3 className="font-bold text-xl mb-4 text-black">
+                Tabla de Productos
+              </h3>
+              <ProductTable
+                onSeleccionarProducto={handleSeleccionarProducto}
+                productoSeleccionadoId={productoSeleccionadoId}
+              />
+            </div>
+            {productoSeleccionadoId && (
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => handleActualizarStock(productoSeleccionadoId)}
+                  className="w-72 h-10 bg-[#00CCFF] border border-black text-black font-bold uppercase rounded"
+                >
+                  Actualizar stock del producto seleccionado
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
