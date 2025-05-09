@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
@@ -14,17 +14,34 @@ export function ConsumoInterno({ onDone }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const productoId = parseInt(form.producto, 10);
+    const cantidad = parseInt(form.cantidad, 10);
+
+    // Validación básica
+    if (isNaN(productoId) || productoId <= 0) {
+      setMessage("Debes ingresar un código de producto válido");
+      return;
+    }
+
+    if (isNaN(cantidad) || cantidad <= 0) {
+      setMessage("Debes ingresar una cantidad válida");
+      return;
+    }
+
     try {
       const payload = {
-        producto: form.producto,
-        cantidad: parseInt(form.cantidad, 10),
+        producto: productoId,
+        cantidad: cantidad,
         motivo: form.motivo,
       };
+
       const { data } = await axios.post(
         `${API_BASE}/consumos-internos/`,
         payload,
         { withCredentials: true }
       );
+
       setMessage(data.message || "Consumo registrado");
       setForm({ producto: "", cantidad: "", motivo: "" });
       onDone?.();
