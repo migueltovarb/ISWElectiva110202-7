@@ -9,7 +9,7 @@ from .serializers import UsuarioSerializer
 class UsuarioListCreateAPIView(APIView):
     def get(self,request):
         usuarios = Usuario.objects.all()
-        serializer = UsuarioSerializer(usuarios)
+        serializer = UsuarioSerializer(usuarios, many=True)
         return Response(serializer.data)
     
     def post(self, request):
