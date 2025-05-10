@@ -37,10 +37,11 @@ class ProductoDetailAPIView(APIView):
         producto = self.get_object(pk)
         if producto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductoSerializer(producto)
+        serializer = ProductoSerializer(producto, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         

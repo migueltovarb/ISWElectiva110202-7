@@ -10,7 +10,7 @@ class CategoriaProducto(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=150)
     categoria = models.ForeignKey(CategoriaProducto, on_delete=models.CASCADE,related_name='Productos')
-    descripcion = models.TimeField(blank=True)
+    descripcion = models.CharField(blank=True)
     precio = models.DecimalField(max_digits=10, decimal_places=0)
     stock = models.PositiveIntegerField(default=0)
     umbral_minimo = models.PositiveIntegerField(default=0)
