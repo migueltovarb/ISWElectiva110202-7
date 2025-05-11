@@ -3,7 +3,7 @@ import {
   createProducto,
   updateProducto,
   deleteProducto,
-} from "../services/api";
+} from "../services/productoService";
 import { useNavigate } from "react-router-dom";
 
 const FormularioProducto = () => {
