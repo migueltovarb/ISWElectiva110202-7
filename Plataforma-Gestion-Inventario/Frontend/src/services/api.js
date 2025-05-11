@@ -78,10 +78,11 @@ export const getProductoPorCategoria = async (categoriaId) => {
 
   return response.data;
 };
-export const updateStockProducto = async (id, stockData) => {
+export const updateStockProducto = async (categoriaId, stockData) => {
+  console.log("categoriaid", categoriaId);
   try {
     const response = await axios.put(
-      `${API_URL}/stock/actualizar/${id}/`,
+      `${API_URL}/stock/actualizar/${categoriaId}/`, // Cambiar el ID por categoriaId
       stockData,
       {
         headers: {
@@ -92,7 +93,7 @@ export const updateStockProducto = async (id, stockData) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error al actualizar el stock del producto",
+      "Error al actualizar el stock de los productos",
       error.response ? error.response.data : error.message
     );
     throw error;

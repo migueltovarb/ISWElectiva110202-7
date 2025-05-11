@@ -16,7 +16,6 @@ const FormularioProducto = () => {
   const [mensajeCategoria, setMensajeCategoria] = useState("");
 
   const [productos, setProductos] = useState([]);
-  const [showStockUpdate, setShowStockUpdate] = useState(false);
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
 
   const navigate = useNavigate();
@@ -53,7 +52,6 @@ const FormularioProducto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (
       !nombre ||
       !categoriaId ||
@@ -65,12 +63,10 @@ const FormularioProducto = () => {
       alert("Por favor, completa todos los campos.");
       return;
     }
-
     if (mensajeCategoria) {
       alert("Corrige el campo Categoría ID: " + mensajeCategoria);
       return;
     }
-
     if (
       parseFloat(precio) <= 0 ||
       parseInt(stock) <= 0 ||
@@ -93,31 +89,28 @@ const FormularioProducto = () => {
       const nuevo = await createProducto(productoData);
       setProductos((prev) => [...prev, nuevo]);
       resetForm();
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert("Hubo un error al crear el producto");
     }
   };
 
   const handleUpdate = async () => {
     if (!productos.length) return;
-    const prod = productos[0];
     try {
-      const updated = await updateProducto(prod.id, prod);
+      const updated = await updateProducto(productos[0].id, productos[0]);
       setProductos([updated, ...productos.slice(1)]);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      console.error("Error al actualizar producto");
     }
   };
 
   const handleDelete = async () => {
     if (!productos.length) return;
-    const prod = productos[0];
     try {
-      await deleteProducto(prod.id);
+      await deleteProducto(productos[0].id);
       setProductos((prev) => prev.slice(1));
-    } catch (error) {
-      console.error(error);
+    } catch {
+      console.error("Error al eliminar producto");
     }
   };
 
@@ -128,8 +121,12 @@ const FormularioProducto = () => {
   };
 
   const handleRedireccionarActualizarStock = () => {
+    // Creamos array de objetos completos
+    const seleccionadosCompleto = productos.filter((p) =>
+      productosSeleccionados.includes(p.id)
+    );
     navigate("/actualizar-stock", {
-      state: { seleccionados: productosSeleccionados },
+      state: { seleccionados: seleccionadosCompleto },
     });
   };
 
@@ -140,128 +137,8 @@ const FormularioProducto = () => {
           <h1 className="border-2 border-black rounded-lg p-6 text-center">
             Formulario de Registro de Productos
           </h1>
-
-          <div>
-            <label htmlFor="nombre" className="block font-bold mb-1 text-black">
-              Nombre Producto
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="categoriaId"
-              className="block font-bold mb-1 text-black"
-            >
-              Categoría ID
-            </label>
-            <input
-              type="number"
-              id="categoriaId"
-              value={categoriaId}
-              onChange={handleCategoriaIdChange}
-              className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
-            />
-            {mensajeCategoria && (
-              <p className="text-red-600 text-sm mt-1">{mensajeCategoria}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="descripcion"
-              className="block font-bold mb-1 text-black"
-            >
-              Descripción
-            </label>
-            <input
-              type="text"
-              id="descripcion"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="stock" className="block text-sm font-medium">
-                Stock
-              </label>
-              <input
-                type="number"
-                id="stock"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-                className="mt-1 block w-full border rounded p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="precio" className="block text-sm font-medium">
-                Precio
-              </label>
-              <input
-                type="number"
-                id="precio"
-                value={precio}
-                onChange={(e) => setPrecio(e.target.value)}
-                className="mt-1 block w-full border rounded p-2"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="umbralMinimo" className="block text-sm font-medium">
-              Umbral Mínimo
-            </label>
-            <input
-              type="number"
-              id="umbralMinimo"
-              value={umbralMinimo}
-              onChange={(e) => setUmbralMinimo(e.target.value)}
-              className="mt-1 block w-full border rounded p-2"
-            />
-          </div>
-
-          <p className="text-center text-xs text-gray-500">
-            Se registrará la fecha y el usuario de forma automática
-          </p>
-
-          <div className="flex justify-between space-x-4 mt-4">
-            <button
-              type="submit"
-              className="flex-1 py-2 bg-blue-500 text-white rounded"
-            >
-              Guardar
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="flex-1 py-2 bg-gray-300 rounded"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleUpdate}
-              className="flex-1 py-2 bg-green-500 text-white rounded"
-            >
-              Actualizar Producto
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="flex-1 py-2 bg-red-500 text-white rounded"
-            >
-              Eliminar Producto
-            </button>
-          </div>
+          {/* Campos del formulario... */}
+          {/* ... */}
         </form>
 
         {productos.length > 0 && (
@@ -273,41 +150,36 @@ const FormularioProducto = () => {
                   <tr>
                     <th className="px-4 py-2">Seleccionar</th>
                     <th className="px-4 py-2">Nombre</th>
-                    <th className="px-4 py-2">ID</th>
+                    <th className="px-4 py-2">Categoría ID</th>
                     <th className="px-4 py-2">Stock</th>
                     <th className="px-4 py-2">Precio</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {productos.map((p) => (
-                    <tr key={p.id}>
+                  {productos.map((producto) => (
+                    <tr key={producto.id}>
                       <td className="px-4 py-2">
                         <input
                           type="checkbox"
-                          checked={productosSeleccionados.includes(p.id)}
-                          onChange={() => toggleSeleccionProducto(p.id)}
+                          checked={productosSeleccionados.includes(producto.id)}
+                          onChange={() => toggleSeleccionProducto(producto.id)}
                         />
                       </td>
-                      <td className="px-4 py-2">{p.nombre}</td>
-                      <td className="px-4 py-2">{p.id}</td>
-                      <td className="px-4 py-2">{p.stock}</td>
-                      <td className="px-4 py-2">{p.precio}</td>
+                      <td className="px-4 py-2">{producto.nombre}</td>
+                      <td className="px-4 py-2">{producto.categoria_id}</td>
+                      <td className="px-4 py-2">{producto.stock}</td>
+                      <td className="px-4 py-2">{producto.precio}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            {productosSeleccionados.length > 0 && (
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={handleRedireccionarActualizarStock}
-                  className="py-2 px-4 bg-indigo-500 text-white rounded hover:bg-indigo-600"
-                >
-                  Actualizar Stock
-                </button>
-              </div>
-            )}
+            <button
+              onClick={handleRedireccionarActualizarStock}
+              className="mt-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Actualizar Stock
+            </button>
           </div>
         )}
       </div>
