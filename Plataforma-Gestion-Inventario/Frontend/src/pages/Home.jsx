@@ -12,6 +12,9 @@ export default function Home() {
           <li>
             <Link to="/crear-producto">Crear Producto</Link>
           </li>
+          <li>
+            <Link to="/registrar-usuario">Registrar Usuario</Link>
+          </li>
         </ul>
       </nav>
     </div>
