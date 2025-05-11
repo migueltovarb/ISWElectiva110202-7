@@ -19,6 +19,17 @@ export const createProducto = async (productoData) => {
   }
 };
 
+export const getProducto = async () => {
+  try {
+  } catch (error) {
+    console.error(
+      "Error al obtener los productos",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
+
 export const updateProducto = async (id, productoData) => {
   try {
     const response = await axios.put(`${API_URL}${id}/`, productoData, {

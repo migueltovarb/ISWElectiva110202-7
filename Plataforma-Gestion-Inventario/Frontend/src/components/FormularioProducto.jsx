@@ -4,6 +4,7 @@ import {
   updateProducto,
   deleteProducto,
 } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const FormularioProducto = () => {
   const [nombre, setNombre] = useState("");
@@ -15,6 +16,9 @@ const FormularioProducto = () => {
 
   const [productos, setProductos] = useState([]);
   const [showStockUpdate, setShowStockUpdate] = useState(false);
+  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+
+  const navigate = useNavigate();
 
   const resetForm = () => {
     setNombre("");
@@ -45,9 +49,7 @@ const FormularioProducto = () => {
       parseInt(stock) <= 0 ||
       parseInt(umbralMinimo) <= 0
     ) {
-      alert(
-        "Los valores de precio, stock y umbral mínimo deben ser mayores a 0."
-      );
+      alert("Los valores deben ser mayores a 0.");
       return;
     }
 
@@ -92,14 +94,27 @@ const FormularioProducto = () => {
     }
   };
 
+  const toggleSeleccionProducto = (id) => {
+    setProductosSeleccionados((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
+  const handleRedireccionarActualizarStock = () => {
+    navigate("/actualizar-stock", {
+      state: { seleccionados: productosSeleccionados },
+    });
+  };
+
   return (
     <main className="min-h-screen bg-white flex justify-center items-center p-4">
       <div className="w-full max-w-3xl bg-[#CCE6CC] border-2 border-black rounded-lg p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
+          <h1 className="border-2 border-black rounded-lg p-6 text-center">
+            Formulario de Registro de Productos
+          </h1>
+
           <div>
-            <h1 className="border-2 border-black rounded-lg p-6 text-center">
-              Formulario de Registro de Productos
-            </h1>
             <label htmlFor="nombre" className="block font-bold mb-1 text-black">
               Nombre Producto
             </label>
@@ -111,6 +126,7 @@ const FormularioProducto = () => {
               className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
             />
           </div>
+
           <div>
             <label
               htmlFor="categoriaId"
@@ -126,6 +142,7 @@ const FormularioProducto = () => {
               className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
             />
           </div>
+
           <div>
             <label
               htmlFor="descripcion"
@@ -141,6 +158,7 @@ const FormularioProducto = () => {
               className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
             />
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="stock" className="block text-sm font-medium">
@@ -151,7 +169,7 @@ const FormularioProducto = () => {
                 id="stock"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
-                className="mt-1 block w-full border rounded p-2 focus:outline-none focus:ring"
+                className="mt-1 block w-full border rounded p-2"
               />
             </div>
             <div>
@@ -163,10 +181,11 @@ const FormularioProducto = () => {
                 id="precio"
                 value={precio}
                 onChange={(e) => setPrecio(e.target.value)}
-                className="mt-1 block w-full border rounded p-2 focus:outline-none focus:ring"
+                className="mt-1 block w-full border rounded p-2"
               />
             </div>
           </div>
+
           <div>
             <label htmlFor="umbralMinimo" className="block text-sm font-medium">
               Umbral Mínimo
@@ -176,37 +195,39 @@ const FormularioProducto = () => {
               id="umbralMinimo"
               value={umbralMinimo}
               onChange={(e) => setUmbralMinimo(e.target.value)}
-              className="mt-1 block w-full border rounded p-2 focus:outline-none focus:ring"
+              className="mt-1 block w-full border rounded p-2"
             />
           </div>
+
           <p className="text-center text-xs text-gray-500">
             Se registrará la fecha y el usuario de forma automática
           </p>
+
           <div className="flex justify-between space-x-4 mt-4">
             <button
               type="submit"
-              className="flex-1 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex-1 py-2 bg-blue-500 text-white rounded"
             >
               Guardar
             </button>
             <button
               type="button"
               onClick={resetForm}
-              className="flex-1 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="flex-1 py-2 bg-gray-300 rounded"
             >
               Cancelar
             </button>
             <button
               type="button"
               onClick={handleUpdate}
-              className="flex-1 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="flex-1 py-2 bg-green-500 text-white rounded"
             >
               Actualizar Producto
             </button>
             <button
               type="button"
               onClick={handleDelete}
-              className="flex-1 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              className="flex-1 py-2 bg-red-500 text-white rounded"
             >
               Eliminar Producto
             </button>
@@ -220,60 +241,40 @@ const FormularioProducto = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium">
-                      Nombre del Producto
-                    </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium">
-                      Código
-                    </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium">
-                      Stock
-                    </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium">
-                      Cantidad
-                    </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium">
-                      Precio
-                    </th>
+                    <th className="px-4 py-2">Seleccionar</th>
+                    <th className="px-4 py-2">Nombre</th>
+                    <th className="px-4 py-2">ID</th>
+                    <th className="px-4 py-2">Stock</th>
+                    <th className="px-4 py-2">Precio</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {productos.map((p, idx) => (
-                    <tr
-                      key={idx}
-                      className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                    >
-                      <td className="px-4 py-2 text-sm">{p.nombre}</td>
-                      <td className="px-4 py-2 text-sm">{p.id}</td>
-                      <td className="px-4 py-2 text-sm">
-                        {p.categoria_nombre}
+                  {productos.map((p) => (
+                    <tr key={p.id}>
+                      <td className="px-4 py-2">
+                        <input
+                          type="checkbox"
+                          checked={productosSeleccionados.includes(p.id)}
+                          onChange={() => toggleSeleccionProducto(p.id)}
+                        />
                       </td>
-                      <td className="px-4 py-2 text-sm">{p.stock}</td>
-                      <td className="px-4 py-2 text-sm">{p.precio}</td>
+                      <td className="px-4 py-2">{p.nombre}</td>
+                      <td className="px-4 py-2">{p.id}</td>
+                      <td className="px-4 py-2">{p.stock}</td>
+                      <td className="px-4 py-2">{p.precio}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => setShowStockUpdate(!showStockUpdate)}
-                className="py-2 px-4 bg-indigo-500 text-white rounded hover:bg-indigo-600"
-              >
-                Actualizar Stock
-              </button>
-            </div>
 
-            {showStockUpdate && (
-              <div className="mt-4 grid grid-cols-3 gap-4">
-                <button className="py-2 bg-white border rounded hover:bg-gray-100">
-                  Seleccionar A
-                </button>
-                <button className="py-2 bg-white border rounded hover:bg-gray-100">
-                  Seleccionar B
-                </button>
-                <button className="py-2 bg-white border rounded hover:bg-gray-100">
-                  Seleccionar C
+            {productosSeleccionados.length > 0 && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={handleRedireccionarActualizarStock}
+                  className="py-2 px-4 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                >
+                  Actualizar Stock
                 </button>
               </div>
             )}

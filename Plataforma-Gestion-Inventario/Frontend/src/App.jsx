@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import FormularioProducto from "./components/FormularioProducto";
 import Home from "./pages/Home";
+import StockUpdatePage from "./pages/StockUpdatePage";
 const App = () => {
   return (
     <div className="bg-[#CCE6CC]">
@@ -14,6 +15,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/crear-producto" element={<FormularioProducto />} />
+        <Route path="/actualizar-stock" element={<StockUpdatePage />} />
       </Routes>
     </div>
   );
