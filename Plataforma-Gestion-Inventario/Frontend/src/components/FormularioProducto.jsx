@@ -13,6 +13,7 @@ const FormularioProducto = () => {
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
   const [umbralMinimo, setUmbralMinimo] = useState("");
+  const [mensajeCategoria, setMensajeCategoria] = useState("");
 
   const [productos, setProductos] = useState([]);
   const [showStockUpdate, setShowStockUpdate] = useState(false);
@@ -27,6 +28,27 @@ const FormularioProducto = () => {
     setPrecio("");
     setStock("");
     setUmbralMinimo("");
+    setMensajeCategoria("");
+  };
+
+  const validarCategoriaId = (id, productos) => {
+    if (productos.some((p) => String(p.categoria_id) === String(id))) {
+      return {
+        valido: false,
+        mensaje: "La categoría ya está asignada a otro producto",
+      };
+    }
+    if (!isNaN(id) && parseFloat(id) <= 0) {
+      return { valido: false, mensaje: "El valor debe ser mayor que cero" };
+    }
+    return { valido: true, mensaje: "Categoría disponible" };
+  };
+
+  const handleCategoriaIdChange = (e) => {
+    const nuevoId = e.target.value;
+    setCategoriaId(nuevoId);
+    const resultado = validarCategoriaId(nuevoId, productos);
+    setMensajeCategoria(resultado.valido ? "" : resultado.mensaje);
   };
 
   const handleSubmit = async (e) => {
@@ -41,6 +63,11 @@ const FormularioProducto = () => {
       !umbralMinimo
     ) {
       alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    if (mensajeCategoria) {
+      alert("Corrige el campo Categoría ID: " + mensajeCategoria);
       return;
     }
 
@@ -138,9 +165,12 @@ const FormularioProducto = () => {
               type="number"
               id="categoriaId"
               value={categoriaId}
-              onChange={(e) => setCategoriaId(e.target.value)}
+              onChange={handleCategoriaIdChange}
               className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
             />
+            {mensajeCategoria && (
+              <p className="text-red-600 text-sm mt-1">{mensajeCategoria}</p>
+            )}
           </div>
 
           <div>

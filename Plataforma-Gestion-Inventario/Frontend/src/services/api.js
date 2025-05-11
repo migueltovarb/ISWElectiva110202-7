@@ -68,6 +68,16 @@ export const deleteProducto = async (id) => {
   }
 };
 
+export const getProductoPorCategoria = async (categoriaId) => {
+  const response = await axios.get(
+    `${API_URL}/stock/actualizar/?categoriaId=${categoriaId}`
+  );
+  if (response.status !== 200) {
+    throw new Error("No se pudo obtener los productos para esta categoría");
+  }
+
+  return response.data;
+};
 export const updateStockProducto = async (id, stockData) => {
   try {
     const response = await axios.put(
