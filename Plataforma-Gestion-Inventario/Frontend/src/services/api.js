@@ -71,7 +71,7 @@ export const deleteProducto = async (id) => {
 export const updateStockProducto = async (id, stockData) => {
   try {
     const response = await axios.put(
-      `${API_URL}/producto/productos/${id}/`,
+      `${API_URL}/stock/actualizar/${id}/`,
       stockData,
       {
         headers: {
