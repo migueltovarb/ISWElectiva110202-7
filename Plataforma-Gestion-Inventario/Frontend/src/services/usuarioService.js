@@ -12,6 +12,11 @@ export const createUsuario = async (usuario) => {
 };
 
 export const getRoles = async () => {
-  const res = await fetch(`${API_URL}/roles/`);
+  const res = await fetch(`${API_URL}/usuario/usuarios/`);
+  return res.json();
+};
+
+export const getUsuarios = async () => {
+  const res = await fetch(`${API_URL}/usuario/usuarios/`);
   return res.json();
 };
