@@ -53,10 +53,11 @@ class ProductoDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class CategoriaProductoListCreateAPIView(APIView):
-    def get(self, request):
-        categorias = CategoriaProducto.objects.all()
-        serializer = CategoriaProductoSerializer(categorias, many=True)
-        return Response(serializer.data)
+    def get(self, pk):
+        try:
+            return CategoriaProducto.objects.get(pk=pk)
+        except CategoriaProducto.DoesNotExist:
+            return None
     
     def post(self,request):
         serializer = CategoriaProductoSerializer(data=request.data)
