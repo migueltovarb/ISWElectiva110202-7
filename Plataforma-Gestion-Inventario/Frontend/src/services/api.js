@@ -18,3 +18,31 @@ export const createProducto = async (productoData) => {
     throw error;
   }
 };
+
+export const updateProducto = async (id, productoData) => {
+  try {
+    const response = await axios.put(`${API_URL}${id}/`, productoData, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error al actualizar el producto",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
+
+export const deleteProducto = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error al eliminar el producto",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
