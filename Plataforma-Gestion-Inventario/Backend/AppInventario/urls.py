@@ -22,7 +22,7 @@ from Registros import urls as Registros_urls
 from GestionReportes import urls as GestionReportes_urls
 from GestionInventario import urls as GestionInventario_urls
 from Generador_Reportes import urls as Generador_Reportes_urls
-
+from actualizacionstock import urls as actualizacionstock_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/producto/',include(GestionProductos_urls)),
@@ -30,5 +30,6 @@ urlpatterns = [
     path('api/registro/',include(Registros_urls)),
     path('api/inventario/',include(GestionInventario_urls)),
     path('api/generador/',include(Generador_Reportes_urls)),
-    path('api/informe/',include(GestionReportes_urls))
+    path('api/informe/',include(GestionReportes_urls)),
+    path('api/stock/', include(actualizacionstock_urls))
 ]
