@@ -18,3 +18,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = ['id','nombre','correo','contrasena','rol','rol_id']
         extra_kwargs = {'contrasena':{'write_only':True}}
+        
+        def create(self, validated_data):
+            return Usuario.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
