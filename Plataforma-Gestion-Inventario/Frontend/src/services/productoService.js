@@ -1,3 +1,5 @@
+import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
 export const createProducto = async (productoData) => {
   try {
     const response = await axios.post(
@@ -11,10 +13,7 @@ export const createProducto = async (productoData) => {
     );
     return response.data;
   } catch (error) {
-    console.error(
-      "Error al crear el producto",
-      error.response ? error.response.data : error.message
-    );
+    console.error("CREATE PRODUCT ERROR:", err.response?.data || err.message);
     throw error;
   }
 };

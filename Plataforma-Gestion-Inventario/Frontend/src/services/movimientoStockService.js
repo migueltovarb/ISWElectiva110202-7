@@ -2,16 +2,6 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const getProductos = async () => {
-  const response = await axios.get(`${API_URL}/productos/`);
-  return response.data;
-};
-
-export const getUsuarios = async () => {
-  const response = await axios.get(`${API_URL}/usuarios/`);
-  return response.data;
-};
-
 export const getTiposMovimiento = async () => {
   const response = await axios.get(`${API_URL}/tipos-movimiento/`);
   return response.data;

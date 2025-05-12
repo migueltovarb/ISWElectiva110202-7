@@ -89,8 +89,13 @@ const FormularioProducto = () => {
       const nuevo = await createProducto(productoData);
       setProductos((prev) => [...prev, nuevo]);
       resetForm();
-    } catch {
-      alert("Hubo un error al crear el producto");
+    } catch (error) {
+      const msg =
+        error.response?.data?.detail ||
+        error.response?.data ||
+        error.message ||
+        "Error desconocido";
+      alert("Hubo un error al crear el producto: " + JSON.stringify(msg));
     }
   };
 
@@ -121,7 +126,6 @@ const FormularioProducto = () => {
   };
 
   const handleRedireccionarActualizarStock = () => {
-    // Creamos array de objetos completos
     const seleccionadosCompleto = productos.filter((p) =>
       productosSeleccionados.includes(p.id)
     );
@@ -137,8 +141,79 @@ const FormularioProducto = () => {
           <h1 className="border-2 border-black rounded-lg p-6 text-center">
             Formulario de Registro de Productos
           </h1>
-          {/* Campos del formulario... */}
-          {/* ... */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 font-medium">Nombre</label>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium">Categoría ID</label>
+              <input
+                type="number"
+                value={categoriaId}
+                onChange={handleCategoriaIdChange}
+                className={`w-full p-2 border rounded ${
+                  mensajeCategoria ? "border-red-500" : ""
+                }`}
+              />
+              {mensajeCategoria && (
+                <p className="text-red-500 text-sm">{mensajeCategoria}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block mb-1 font-medium">Descripción</label>
+              <textarea
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                className="w-full p-2 border rounded"
+              ></textarea>
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium">Precio</label>
+              <input
+                type="number"
+                value={precio}
+                onChange={(e) => setPrecio(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium">Stock</label>
+              <input
+                type="number"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium">Umbral Mínimo</label>
+              <input
+                type="number"
+                value={umbralMinimo}
+                onChange={(e) => setUmbralMinimo(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+          >
+            Registrar Producto
+          </button>
         </form>
 
         {productos.length > 0 && (
@@ -174,12 +249,27 @@ const FormularioProducto = () => {
                 </tbody>
               </table>
             </div>
-            <button
-              onClick={handleRedireccionarActualizarStock}
-              className="mt-4 py-2 bg-blue-600 text-white rounded"
-            >
-              Actualizar Stock
-            </button>
+
+            <div className="flex gap-4 mt-4">
+              <button
+                onClick={handleRedireccionarActualizarStock}
+                className="py-2 px-4 bg-blue-600 text-white rounded"
+              >
+                Actualizar Stock
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="py-2 px-4 bg-yellow-500 text-black rounded"
+              >
+                Actualizar
+              </button>
+              <button
+                onClick={handleDelete}
+                className="py-2 px-4 bg-red-600 text-white rounded"
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         )}
       </div>
