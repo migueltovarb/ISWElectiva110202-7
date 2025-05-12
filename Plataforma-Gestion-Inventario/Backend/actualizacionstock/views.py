@@ -6,38 +6,47 @@ from .models import Stock
 from .serializers import StockSerializer
 
 class StockUpdateView(APIView):
-    def get(self, request, *args, **kwargs):
-        categoria_id = request.query_params.get('categoriaId')
+    def get(self, request, pk=None, *args, **kwargs):
+        if pk is not None:
+            try:
+                stock_obj = Stock.objects.get(producto_id=pk)
+            except Stock.DoesNotExist:
+                return Response(
+                    {"error": "Producto no tiene stock registrado"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            serializer = StockSerializer(stock_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
+        categoria_id = request.query_params.get('categoriaId')
         if categoria_id:
             productos = Producto.objects.filter(categoria_id=categoria_id)
             if productos.exists():
-                return Response([producto.to_dict() for producto in productos], status=status.HTTP_200_OK)
-            return Response({"error": "No se encontraron productos para esta categoría"}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    [p.to_dict() for p in productos],
+                    status=status.HTTP_200_OK
+                )
+            return Response(
+                {"error": "No se encontraron productos para esta categoría"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-        return Response({"error": "Falta parámetro de consulta"}, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(
+            {"error": "Falta parámetro de consulta o ID de producto"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     def put(self, request, pk):
         try:
-            producto = Producto.objects.get(id=pk)
+            stock_obj = Stock.objects.get(producto_id=pk)
         except Stock.DoesNotExist:
             return Response(
                 {"error": "Producto no tiene stock registrado"},
                 status=status.HTTP_404_NOT_FOUND
             )
-        stock_obj, created = Stock.objects.get_or_create(
-            producto=producto,
-            defaults={
-                "cantidad": request.data.get("cantidad", 0),
-                "stock_minimo": request.data.get("stock_minimo", 1)
-            }
-        )
-        if not created:
-            serializer = StockSerializer(stock_obj, data=request.data, partial=True)
-            if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            serializer = StockSerializer(stock_obj)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        serializer = StockSerializer(stock_obj, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
