@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   createProducto,
+  getProducto,
   updateProducto,
   deleteProducto,
 } from "../services/productoService";
@@ -17,6 +18,9 @@ const FormularioProducto = () => {
 
   const [productos, setProductos] = useState([]);
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+
+  const [mostrarTabla, setMostrarTabla] = useState(false);
+  const [editarProducto, setEditarProducto] = useState(null);
 
   const navigate = useNavigate();
 
@@ -100,22 +104,27 @@ const FormularioProducto = () => {
   };
 
   const handleUpdate = async () => {
-    if (!productos.length) return;
+    if (!editarProducto) return;
     try {
-      const updated = await updateProducto(productos[0].id, productos[0]);
-      setProductos([updated, ...productos.slice(1)]);
-    } catch {
-      console.error("Error al actualizar producto");
+      const updated = await updateProducto(editarProducto.id, editarProducto);
+      setProductos((prev) =>
+        prev.map((producto) =>
+          producto.id === updated.id ? updated : producto
+        )
+      );
+      setEditarProducto(null);
+    } catch (error) {
+      console.error("Error al actualizar producto", error);
     }
   };
 
-  const handleDelete = async () => {
-    if (!productos.length) return;
+  const handleDelete = async (id) => {
     try {
-      await deleteProducto(productos[0].id);
-      setProductos((prev) => prev.slice(1));
-    } catch {
-      console.error("Error al eliminar producto");
+      await deleteProducto(id);
+      setProductos((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+      alert("No se pudo eliminar el producto.");
     }
   };
 
@@ -132,6 +141,27 @@ const FormularioProducto = () => {
     navigate("/actualizar-stock", {
       state: { seleccionados: seleccionadosCompleto },
     });
+  };
+
+  const toogleTablaProductos = async () => {
+    if (!mostrarTabla) {
+      try {
+        const productosObtenidos = await getProducto();
+        setProductos(productosObtenidos);
+      } catch (error) {
+        alert("No se pudieron cargar los productos");
+      }
+    }
+  };
+
+  const SeleccionarProductoParaEditar = (producto) => {
+    setNombre(producto.nombre);
+    setCategoriaId(producto.categoria_id);
+    setDescripcion(producto.descripcion);
+    setPrecio(producto.precio);
+    setStock(producto.stock);
+    setUmbralMinimo(producto.umbral_minimo);
+    setEditarProducto(producto);
   };
 
   return (
@@ -208,12 +238,21 @@ const FormularioProducto = () => {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
-          >
-            Registrar Producto
-          </button>
+          <div className="flex flex-col md:flex-row gap-4 mt-4">
+            <button
+              type="submit"
+              className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+            >
+              Registrar Producto
+            </button>
+            <button
+              type="submit"
+              onClick={toogleTablaProductos}
+              className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+            >
+              {mostrarTabla ? "Ocultar Productos" : "Ver Productos"}
+            </button>
+          </div>
         </form>
 
         {productos.length > 0 && (
@@ -244,32 +283,121 @@ const FormularioProducto = () => {
                       <td className="px-4 py-2">{producto.categoria_id}</td>
                       <td className="px-4 py-2">{producto.stock}</td>
                       <td className="px-4 py-2">{producto.precio}</td>
+                      <td className="px-4 py-2">
+                        <button
+                          className="py-2 px-4 bg-green-600 text-white rounded"
+                          onClick={() =>
+                            SeleccionarProductoParaEditar(producto)
+                          }
+                        >
+                          Actualizar Producto
+                        </button>
+                        <button
+                          className="py-2 px-4 bg-red-600 text-white rounded"
+                          onClick={() => handleDelete(producto.id)}
+                        >
+                          Eliminar
+                        </button>
+                        <button
+                          onClick={handleRedireccionarActualizarStock}
+                          className="py-2 px-4 bg-blue-600 text-white rounded"
+                        >
+                          Actualizar Stock
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+            {editarProducto && (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold">Editar Producto</h3>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleUpdate();
+                  }}
+                  className="space-y-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-1 font-medium">Nombre</label>
+                      <input
+                        type="text"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
 
-            <div className="flex gap-4 mt-4">
-              <button
-                onClick={handleRedireccionarActualizarStock}
-                className="py-2 px-4 bg-blue-600 text-white rounded"
-              >
-                Actualizar Stock
-              </button>
-              <button
-                onClick={handleUpdate}
-                className="py-2 px-4 bg-yellow-500 text-black rounded"
-              >
-                Actualizar
-              </button>
-              <button
-                onClick={handleDelete}
-                className="py-2 px-4 bg-red-600 text-white rounded"
-              >
-                Eliminar
-              </button>
-            </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Categoría ID
+                      </label>
+                      <input
+                        type="number"
+                        value={categoriaId}
+                        onChange={handleCategoriaIdChange}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block mb-1 font-medium">
+                        Descripción
+                      </label>
+                      <textarea
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      ></textarea>
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">Precio</label>
+                      <input
+                        type="number"
+                        value={precio}
+                        onChange={(e) => setPrecio(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">Stock</label>
+                      <input
+                        type="number"
+                        value={stock}
+                        onChange={(e) => setStock(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Umbral Mínimo
+                      </label>
+                      <input
+                        type="number"
+                        value={umbralMinimo}
+                        onChange={(e) => setUmbralMinimo(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-4 mt-4">
+                    <button
+                      type="submit"
+                      className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+                    >
+                      Actualizar Producto
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         )}
       </div>
