@@ -19,13 +19,20 @@ const ActualizarStock = () => {
     if (seleccionados && seleccionados.length > 0) {
       const prod = seleccionados[0];
       setProductoSeleccionado(prod);
-      setCantidad(prod.cantidad != null ? String(prod.cantidad) : "");
+      setCantidad(
+        typeof prod.cantidad === "number" ? String(prod.cantidad) : ""
+      );
       setStockMinimo(
-        prod.stock_minimo != null ? String(prod.stock_minimo) : ""
+        typeof prod.stock_minimo === "number" ? String(prod.stock_minimo) : ""
       );
       setUmbralMinimo(
-        prod.umbral_minimo != null ? String(prod.umbral_minimo) : ""
+        typeof prod.umbral_minimo === "number" ? String(prod.umbral_minimo) : ""
       );
+    } else {
+      setProductoSeleccionado(null);
+      setCantidad("");
+      setStockMinimo("");
+      setUmbralMinimo("");
     }
   }, [seleccionados]);
 
@@ -47,11 +54,25 @@ const ActualizarStock = () => {
     try {
       await updateStockProducto(productoSeleccionado.id, payload);
       const actualizado = await getStockProducto(productoSeleccionado.id);
-      setProductoSeleccionado(actualizado);
-      setCantidad(String(actualizado.cantidad));
-      setStockMinimo(String(actualizado.stock_minimo));
-      setUmbralMinimo(String(actualizado.umbral_minimo));
-      setMensaje("Stock actualizado correctamente");
+      if (
+        actualizado &&
+        typeof actualizado.cantidad === "number" &&
+        typeof actualizado.stock_minimo === "number" &&
+        typeof actualizado.umbral_minimo === "number"
+      ) {
+        setProductoSeleccionado(actualizado);
+        setCantidad(String(actualizado.cantidad));
+        setStockMinimo(String(actualizado.stock_minimo));
+        setUmbralMinimo(String(actualizado.umbral_minimo));
+        setMensaje("Stock actualizado correctamente");
+        await fetch("http://localhost:3000/api/check-stock", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productos: [actualizado] }),
+        });
+      }
     } catch {
       setMensaje("Error al actualizar el stock");
     }
@@ -77,7 +98,7 @@ const ActualizarStock = () => {
                 <label className="block font-bold mb-1">Producto</label>
                 <input
                   type="text"
-                  value={productoSeleccionado.nombre}
+                  value={productoSeleccionado?.nombre ?? ""}
                   readOnly
                   className="w-full px-2 py-2 bg-[#E5E5E5] border border-black rounded text-lg"
                 />
@@ -87,7 +108,7 @@ const ActualizarStock = () => {
                 <input
                   name="cantidad"
                   type="number"
-                  value={cantidad}
+                  value={cantidad ?? ""}
                   onChange={handleInputChange}
                   required
                   className="w-full px-2 py-2 bg-[#E5E5E5] border border-black rounded"
@@ -98,7 +119,7 @@ const ActualizarStock = () => {
                 <input
                   name="stockMinimo"
                   type="number"
-                  value={stockMinimo}
+                  value={stockMinimo ?? ""}
                   onChange={handleInputChange}
                   required
                   className="w-full px-2 py-2 bg-[#E5E5E5] border border-black rounded"
@@ -109,7 +130,7 @@ const ActualizarStock = () => {
                 <input
                   name="umbralMinimo"
                   type="number"
-                  value={umbralMinimo}
+                  value={umbralMinimo ?? ""}
                   onChange={handleInputChange}
                   required
                   className="w-full px-2 py-2 bg-[#E5E5E5] border border-black rounded"
