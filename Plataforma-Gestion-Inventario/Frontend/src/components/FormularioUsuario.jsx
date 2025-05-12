@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { createUsuario, getUsuarios } from "../services/usuarioService";
+import {
+  createUsuario,
+  getUsuarios,
+  getRoles,
+} from "../services/usuarioService";
+
 const FormularioUsuario = () => {
   const [form, setForm] = useState({
     nombre: "",
     correo: "",
     contrasena: "",
-    rol: "",
   });
 
   const [usuarios, setUsuarios] = useState([]);
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     getUsuarios().then(setUsuarios);
   }, []);
-
-  const [mensaje, setMensaje] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,9 +29,18 @@ const FormularioUsuario = () => {
       setMensaje("La contraseña debe tener al menos 8 caracteres.");
       return;
     }
-    await createUsuario(form);
+
+    // Asegúrate de que 'rol_id' esté presente y enviado correctamente
+    const data = {
+      nombre: form.nombre,
+      correo: form.correo,
+      contrasena: form.contrasena,
+      rol_id: 1, // Asignar un valor predeterminado para rol_id
+    };
+
+    await createUsuario(data);
     setMensaje("Usuario guardado correctamente.");
-    setForm({ nombre: "", correo: "", contrasena: "", rol: "" });
+    setForm({ nombre: "", correo: "", contrasena: "" });
     getUsuarios().then(setUsuarios);
   };
 
@@ -71,18 +83,6 @@ const FormularioUsuario = () => {
                 className="w-full px-3 py-2 bg-[#D9D9D9] border border-black rounded"
               />
             </div>
-            <div>
-              <label className="block font-bold mb-1">ROL</label>
-              <input
-                name="rol"
-                type="rol"
-                value={form.rol}
-                onChange={handleChange}
-                placeholder="Rol"
-                className="w-full px-3 py-2 bg-[#D9D9D9] border border-black rounded"
-              />
-            </div>
-
             <button
               type="submit"
               className="w-36 h-10 bg-[#00CCFF] border border-black uppercase font-bold rounded"
@@ -92,7 +92,7 @@ const FormularioUsuario = () => {
             <button
               type="button"
               onClick={() =>
-                setForm({ nombre: "", correo: "", contrasena: "", rol: "" })
+                setForm({ nombre: "", correo: "", contrasena: "" })
               }
               className="w-36 h-10 bg-[#00CCFF] border border-black uppercase font-bold rounded"
             >
@@ -116,7 +116,7 @@ const FormularioUsuario = () => {
               <tbody>
                 {usuarios.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="text-center p-4">
+                    <td colSpan="4" className="text-center p-4">
                       No hay usuarios registrados
                     </td>
                   </tr>
@@ -125,11 +125,8 @@ const FormularioUsuario = () => {
                     <tr key={u.id} className="even:bg-gray-50">
                       <td className="border border-black p-2">{u.nombre}</td>
                       <td className="border border-black p-2">{u.email}</td>
-                      <td className="border border-black p-2">
-                        {u.contraseña}
-                      </td>
                       <td className="p-2 border border-black">
-                        {u.rol_nombre || u.rol}{" "}
+                        {u.rol_nombre}
                       </td>
                     </tr>
                   ))
