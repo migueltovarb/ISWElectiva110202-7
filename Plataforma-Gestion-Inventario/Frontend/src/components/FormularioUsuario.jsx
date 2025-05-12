@@ -30,12 +30,11 @@ const FormularioUsuario = () => {
       return;
     }
 
-    // Asegúrate de que 'rol_id' esté presente y enviado correctamente
     const data = {
       nombre: form.nombre,
       correo: form.correo,
       contrasena: form.contrasena,
-      rol_id: 1, // Asignar un valor predeterminado para rol_id
+      rol_id: 1,
     };
 
     await createUsuario(data);
@@ -110,7 +109,6 @@ const FormularioUsuario = () => {
                     CORREO ELECTRÓNICO
                   </th>
                   <th className="border border-black p-2">ROL</th>
-                  <th className="border border-black p-2">CONTRASEÑA</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +122,7 @@ const FormularioUsuario = () => {
                   usuarios.map((u) => (
                     <tr key={u.id} className="even:bg-gray-50">
                       <td className="border border-black p-2">{u.nombre}</td>
-                      <td className="border border-black p-2">{u.email}</td>
+                      <td className="border border-black p-2">{u.correo}</td>
                       <td className="p-2 border border-black">
                         {u.rol_nombre}
                       </td>
