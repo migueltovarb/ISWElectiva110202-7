@@ -1,46 +1,92 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { registroMovimiento } from "/src/services/registroService";
 
 const RegistroForm = () => {
-  const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [form, setForm] = useState({
+    producto_id: "",
+    tipo_movimiento_id: "",
+    cantidad: "",
+    usuario_id: "",
+    estado_id: "",
+  });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validación de campos obligatorios
+    if (
+      !form.producto_id ||
+      !form.tipo_movimiento_id ||
+      !form.cantidad ||
+      !form.usuario_id ||
+      !form.estado_id
+    ) {
+      setError("Todos los campos son obligatorios.");
+      return;
+    }
+
+    // Validación de la cantidad
+    if (isNaN(form.cantidad) || parseInt(form.cantidad) <= 0) {
+      setError("La cantidad debe ser un número positivo.");
+      return;
+    }
+
+    // Enviar datos al backend
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/registro/", {
-        nombre,
-        correo,
-        contrasena,
-      });
-      console.log("Registro creado:", response.data);
+      const data = await registroMovimiento(form);
+      console.log("Movimiento registrado:", data);
+      setError(""); // Limpiar errores si el registro fue exitoso
     } catch (error) {
-      console.error("Error al registrar:", error);
+      setError(
+        "Error al registrar: " + (error.response?.data || error.message)
+      );
+      console.error(
+        "Error al registrar:",
+        error.response?.data || error.message
+      );
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <input
-        type="text"
-        value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-        placeholder="Nombre"
+        name="producto_id"
+        value={form.producto_id}
+        onChange={handleChange}
+        placeholder="Producto ID"
       />
       <input
-        type="email"
-        value={correo}
-        onChange={(e) => setCorreo(e.target.value)}
-        placeholder="Correo"
+        name="tipo_movimiento_id"
+        value={form.tipo_movimiento_id}
+        onChange={handleChange}
+        placeholder="Tipo Movimiento ID"
       />
       <input
-        type="password"
-        value={contrasena}
-        onChange={(e) => setContrasena(e.target.value)}
-        placeholder="Contraseña"
+        name="cantidad"
+        type="number"
+        value={form.cantidad}
+        onChange={handleChange}
+        placeholder="Cantidad"
       />
-      <button type="submit">Registrar</button>
+      <input
+        name="usuario_id"
+        value={form.usuario_id}
+        onChange={handleChange}
+        placeholder="Usuario ID"
+      />
+      <input
+        name="estado_id"
+        value={form.estado_id}
+        onChange={handleChange}
+        placeholder="Estado ID"
+      />
+      <button type="submit">Registrar Movimiento</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
 };

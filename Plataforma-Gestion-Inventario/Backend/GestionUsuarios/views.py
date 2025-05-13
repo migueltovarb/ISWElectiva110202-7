@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import Usuario
-from .serializers import UsuarioSerializer
+from .models import Usuario, RolUsuario
+from .serializers import UsuarioSerializer, RolUsuarioSerializer
 # Create your views here.
 
 class UsuarioListCreateAPIView(APIView):
@@ -49,3 +49,10 @@ class UsuarioDetailAPIView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         usuario.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class RolUsuarioListAPIView(APIView):
+    def get(self,request):
+        roles = RolUsuario.objects.all()
+        serializer = RolUsuarioSerializer(roles, many=True)
+        return Response(serializer.data)
+    

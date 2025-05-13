@@ -4,10 +4,10 @@ import FormularioProducto from "./components/FormularioProducto";
 import Inicio from "./pages/Inicio";
 import ActualizarStock from "./pages/ActualizarStock";
 import FormularioUsuario from "./components/FormularioUsuario";
-import RegistroForm from "./RegistroForm";
-import InventarioList from "./InventarioList";
-import GeneradorReporteForm from "./GeneradorReporteForm";
-import InformeList from "./InformeList";
+import RegistroForm from "./components/RegistroForm";
+import InventarioList from "./components/InventarioList";
+import GeneradorReporteForm from "./components/GeneradorReporteForm";
+import InformeList from "./components/InformeList";
 
 const App = () => {
   return (
