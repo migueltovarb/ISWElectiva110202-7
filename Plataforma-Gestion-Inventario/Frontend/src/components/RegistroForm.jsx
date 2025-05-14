@@ -18,7 +18,6 @@ const RegistroForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación de campos obligatorios
     if (
       !form.producto_id ||
       !form.tipo_movimiento_id ||
@@ -30,17 +29,23 @@ const RegistroForm = () => {
       return;
     }
 
-    // Validación de la cantidad
     if (isNaN(form.cantidad) || parseInt(form.cantidad) <= 0) {
       setError("La cantidad debe ser un número positivo.");
       return;
     }
 
-    // Enviar datos al backend
+    const payload = {
+      producto: parseInt(form.producto_id),
+      tipo_movimiento: parseInt(form.tipo_movimiento_id),
+      cantidad: parseInt(form.cantidad),
+      usuario: parseInt(form.usuario_id),
+      estado: parseInt(form.estado_id),
+    };
+
     try {
-      const data = await registroMovimiento(form);
+      const data = await registroMovimiento(payload);
       console.log("Movimiento registrado:", data);
-      setError(""); // Limpiar errores si el registro fue exitoso
+      setError("");
     } catch (error) {
       setError(
         "Error al registrar: " + (error.response?.data || error.message)
@@ -85,7 +90,7 @@ const RegistroForm = () => {
         onChange={handleChange}
         placeholder="Estado ID"
       />
-      <button type="submit">Registrar Movimiento</button>
+      <button stype="submit">Registrar Movimiento</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
