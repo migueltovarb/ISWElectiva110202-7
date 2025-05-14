@@ -10,13 +10,16 @@ const FormularioUsuario = () => {
     nombre: "",
     correo: "",
     contrasena: "",
+    rol_id: "",
   });
 
   const [usuarios, setUsuarios] = useState([]);
   const [mensaje, setMensaje] = useState("");
+  const [roles, setRoles] = useState([]);
 
   useEffect(() => {
     getUsuarios().then(setUsuarios);
+    getRoles().then(setRoles);
   }, []);
 
   const handleChange = (e) => {
@@ -34,8 +37,13 @@ const FormularioUsuario = () => {
       nombre: form.nombre,
       correo: form.correo,
       contrasena: form.contrasena,
-      rol_id: 1,
+      rol_id: parseInt(form.rol_id),
     };
+
+    if (!form.rol_id) {
+      setMensaje("Debes seleccionar un rol.");
+      return;
+    }
 
     await createUsuario(data);
     setMensaje("Usuario guardado correctamente.");
@@ -81,6 +89,22 @@ const FormularioUsuario = () => {
                 placeholder="Contraseña"
                 className="w-full px-3 py-2 bg-[#D9D9D9] border border-black rounded"
               />
+            </div>
+            <div>
+              <label className="font-block mb-1">ROL</label>
+              <select
+                name="rol_id"
+                value={form.rol_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 bg-[#D9D9D9] border-black rounded"
+              >
+                <option value="">Selecciona un rol</option>
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               type="submit"
