@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17.4.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: Plataforma_Gestion_Inventario
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../github/Dockerfile/Dockerfile
+    command: gunicorn AppInventario.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend/:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/Plataforma_Gestion_Inventario
+    depends_on:
+      - db
+
+  backend-notificaciones:
+    build:
+      context: ./backend-notificaciones
+      dockerfile: ../github/Dockerfile/Dockerfile
+    volumes:
+      - ./backend-notificaciones:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../github/Dockerfile/Dockerfile
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
