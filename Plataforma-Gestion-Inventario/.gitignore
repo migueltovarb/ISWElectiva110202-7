@@ -1,0 +1,14 @@
+/frontend/.env
+/backend-notificaciones/.env
+
+**/.env
+**/.env.*
+
+
+
+**/node_modules/
+
+**/dist/
+**/build/
+**/*.log
+**/*.tmp
