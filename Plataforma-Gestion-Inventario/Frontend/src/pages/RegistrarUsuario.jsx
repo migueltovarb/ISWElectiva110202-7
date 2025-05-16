@@ -1,12 +1,11 @@
 import React from "react";
-import MovimientoStock from "../components/MovimientoStock";
+import FormularioUsuario from "../components/FormularioUsuario";
 import { Link } from "react-router-dom";
-
-export default function ActualizarStock() {
+export default function RegistrarUsuario() {
   return (
     <main className="flex flex-col items-center min-h-screen p-4 bg-[#CCE6CC]">
       <div>
-        <nav className="relative border-2 bg-[#fac28d] p-2 rounded-md">
+        <nav className="relative border-2  p-2 rounded-md">
           <ul className="flex flex-wrap justify-center gap-4 py-2">
             <li>
               <Link to="/">Inicio</Link>
@@ -32,7 +31,9 @@ export default function ActualizarStock() {
           </ul>
         </nav>
       </div>
-      <MovimientoStock />
+      <div>
+        <FormularioUsuario />
+      </div>
     </main>
   );
 }

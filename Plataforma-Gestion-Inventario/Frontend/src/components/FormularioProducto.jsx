@@ -164,27 +164,33 @@ const FormularioProducto = () => {
     setEditarProducto(producto);
   };
 
+  const handleCancelar = () => {
+    window.history.back();
+  };
+
   return (
-    <main className="min-h-screen bg-white flex justify-center items-center p-4">
+    <div className="min-h-screen bg-white flex justify-center items-center p-4">
       <div className="w-full max-w-3xl bg-[#CCE6CC] border-2 border-black rounded-lg p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <h1 className="border-2 border-black rounded-lg p-6 text-center">
-            Formulario de Registro de Productos
+          <h1 className="border-2 border-black rounded-lg p-6 font-bold uppercase text-center text-xl mb-4 text-[#FFA500]">
+            FORMULARIO DE REGISTRO DE PRODUCTOS
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-[#E5E5E5] border border-black rounded-lg p-4 mb-6">
             <div>
-              <label className="block mb-1 font-medium">Nombre</label>
+              <label className="block font-bold mb-1 text-black">Nombre</label>
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full px-2 h-10 bg-[#D9D9D9] border border-black rounded"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Categoría ID</label>
+              <label className="block font-bold mb-1 text-black">
+                Categoría ID
+              </label>
               <input
                 type="number"
                 value={categoriaId}
@@ -198,8 +204,10 @@ const FormularioProducto = () => {
               )}
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block mb-1 font-medium">Descripción</label>
+            <div>
+              <label className="block font-bold mb-1 text-black">
+                Descripción
+              </label>
               <textarea
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
@@ -251,6 +259,12 @@ const FormularioProducto = () => {
               className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
             >
               {mostrarTabla ? "Ocultar Productos" : "Ver Productos"}
+            </button>
+            <button
+              onClick={handleCancelar}
+              className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+            >
+              Cancelar
             </button>
           </div>
         </form>
@@ -394,6 +408,12 @@ const FormularioProducto = () => {
                     >
                       Actualizar Producto
                     </button>
+                    <button
+                      onClick={handleCancelar}
+                      className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 </form>
               </div>
@@ -401,7 +421,7 @@ const FormularioProducto = () => {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 

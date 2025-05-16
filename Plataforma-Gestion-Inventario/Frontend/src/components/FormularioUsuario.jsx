@@ -52,7 +52,7 @@ const FormularioUsuario = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen bg-white p-6">
       <div className="mt-6">
         <div className="bg-[#CCE6CC] border border-black p-6 mb-6 rounded-lg">
           <h2 className="text-center uppercase font-bold text-xl mb-4 text-[#FFA500]">
