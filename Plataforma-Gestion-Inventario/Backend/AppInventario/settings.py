@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'GestionProductos',
     'GestionReportes',
     'GestionUsuarios',
-    'Registros',
+    'GestionMovimientos',
     'corsheaders'
 ]
 

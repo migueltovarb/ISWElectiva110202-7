@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CategoriaProducto,Producto, Stock
+from .models import CategoriaProducto,Producto
 
 class CategoriaProductoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +18,3 @@ class ProductoSerializer(serializers.ModelSerializer):
         model = Producto
         fields = ['id', 'nombre', 'descripcion', 'precio', 'stock', 'umbral_minimo', 'categoria', 'categoria_id']
 
-class StockSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Stock
-        fields = '__all__'

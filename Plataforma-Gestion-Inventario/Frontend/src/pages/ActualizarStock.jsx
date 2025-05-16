@@ -29,6 +29,11 @@ export default function ActualizarStock() {
             <li>
               <Link to="/informes">Informe</Link>
             </li>
+            <li>
+              <Link to="/historial-transferencias">
+                Historial Transferencias
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

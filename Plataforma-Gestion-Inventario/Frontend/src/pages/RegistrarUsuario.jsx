@@ -5,7 +5,7 @@ export default function RegistrarUsuario() {
   return (
     <main className="flex flex-col items-center min-h-screen p-4 bg-[#CCE6CC]">
       <div>
-        <nav className="relative border-2  p-2 rounded-md">
+        <nav className="relative border-2 bg-[#fac28d] p-2 rounded-md">
           <ul className="flex flex-wrap justify-center gap-4 py-2">
             <li>
               <Link to="/">Inicio</Link>
@@ -27,6 +27,11 @@ export default function RegistrarUsuario() {
             </li>
             <li>
               <Link to="/informes">Informe</Link>
+            </li>
+            <li>
+              <Link to="/historial-transferencias">
+                Historial Transferencias
+              </Link>
             </li>
           </ul>
         </nav>
