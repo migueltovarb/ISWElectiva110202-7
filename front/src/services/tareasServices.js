@@ -50,7 +50,7 @@ export const CrudTareaPut = async (pk, tareaData) => {
   }
 };
 
-export const CrudTareDelete = async (pk) => {
+export const CrudTareaDelete = async (pk) => {
   try {
     const response = await axios.delete(`${API_URL}//crud/tareas/${pk}/`);
     return response.data;
