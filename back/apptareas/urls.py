@@ -16,9 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from crudtareas import urls as crudtareas_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/crud',include(crudtareas_urls))
 ]

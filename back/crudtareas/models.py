@@ -6,7 +6,6 @@ class RegistroTareas(models.Model):
     nombre = models.CharField(blank=True, max_length=200)
     descripcion = models.CharField(blank=True, max_length=400)
     estado = models.CharField(blank=True, max_length=30)
-    fecha = models.DateField(auto_now_add=True)
     def __str__(self):
         return "Tarea registrada:{self.nombre}" 
     
@@ -24,14 +23,12 @@ class ActualizacionTareas(models.Model):
     nombre_actualizado = models.CharField(max_length=200, blank=True)
     descripcion_actualizado = models.CharField(max_length=400,blank=True)
     estado_actualizado = models.CharField(max_length=30,blank=True)
-    fecha_actualizacion = models.DateField(auto_now_add=True)
     
     def __str__(self):
         return "Tarea Actualizada:{self.tarea}"
     
 class EliminarTareas(models.Model):
     tarea = models.ForeignKey(RegistroTareas, on_delete=models.CASCADE,related_name="eliminaciones")
-    fecha_eliminacion = models.DateField(auto_now_add=True)
     motivo = models.CharField(blank=True)
     
     def __str__(self):
